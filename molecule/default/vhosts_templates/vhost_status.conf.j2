@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+vhost_traffic_status_zone;
+
+server {
+  
+  listen 80;
+  
+  access_log off;
+  allow 127.0.0.1;
+  deny all;
+
+  location /status {
+    vhost_traffic_status_display;
+    vhost_traffic_status_display_format html;
+  }
+}

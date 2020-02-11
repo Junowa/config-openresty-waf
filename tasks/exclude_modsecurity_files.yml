@@ -1,0 +1,15 @@
+---
+- name: "Check {{ item }} file is present"
+  stat: path=/usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/{{ item }}
+  register: file
+
+- name: "Copy {{ item }} to {{ item }}.disabled"
+  copy:
+    remote_src: true
+    src: /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/{{ item }}
+    dest: /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/{{ item }}.disabled
+  when: file.stat.exists
+
+- name: "Remove {{ item }}"
+  file: path=/usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/{{ item }} state=absent
+  when: file.stat.exists

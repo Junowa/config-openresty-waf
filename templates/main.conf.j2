@@ -1,0 +1,8 @@
+# From https://github.com/SpiderLabs/ModSecurity/blob/master/\
+# modsecurity.conf-recommended
+#
+# Include the recommended configuration
+Include /etc/nginx/modsec/modsecurity.conf
+# OWASP CRS v3 rules
+Include /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/crs-setup.conf
+Include /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/*.conf

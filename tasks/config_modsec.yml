@@ -1,0 +1,19 @@
+---
+
+- import_tasks: customize_owasp_security_rules.yml
+
+- name: create modsec configuration folder
+  file:
+    path: /etc/nginx/modsec
+    state: directory
+    mode: 0744
+
+- name: create modsec conf files
+  template:
+    src: "{{ item }}.j2"
+    dest: /etc/nginx/modsec/{{ item }}
+    mode: 0644
+  notify: restart openresty
+  with_items:
+    - main.conf
+    - modsecurity.conf

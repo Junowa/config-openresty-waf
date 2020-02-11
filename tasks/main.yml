@@ -1,0 +1,36 @@
+---
+
+- include_tasks: config_modsec.yml
+
+# TO FIX this https://github.com/SpiderLabs/ModSecurity/issues/1941
+- name: add unicode.mapping
+  get_url:
+    url: "{{ repository_path }}/unicode.mapping"
+    dest: "/etc/nginx/modsec/unicode.mapping"
+    mode: 0744
+
+- name: include vhost to nginx.conf
+  blockinfile:
+    path: /usr/local/openresty/nginx/conf/nginx.conf
+    insertafter: "http {"
+    block: "        include /usr/local/openresty/nginx/conf/sites-enabled/*;"
+
+- name: create sites-available and sites_enabled folders
+  file:
+    path: /usr/local/openresty/nginx/conf/{{ item }}
+    state: directory
+    mode: 0744
+  with_items:
+    - sites-available
+    - sites-enabled
+
+- name: create openresty log directory
+  file:
+    path: /var/log/nginx
+    state: directory
+    mode: 0744
+
+- include_tasks: add_vhost.yml
+  with_items: "{{ custom_vhosts_config }}"
+  when: (custom_vhosts_config is defined)
+        and (custom_vhosts_config | length >0)

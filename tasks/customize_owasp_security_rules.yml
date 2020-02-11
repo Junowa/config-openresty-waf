@@ -1,0 +1,38 @@
+---
+  
+- name: "Enable allowed HTTP methods (RuleID: 900200)"
+  blockinfile:
+    path: /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/crs-setup.conf
+    insertafter: "^#  setvar:'tx.allowed_methods"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK (allowed_methods)"
+    block: |
+      SecAction \
+        "id:900200,\
+         phase:1,\
+         nolog,\
+         pass,\
+         t:none,\
+         setvar:'tx.allowed_methods={{ modsecurity_allowed_http_methods }}'"
+
+- name: "Enable allowed content types (RuleID: 900220)"
+  blockinfile:
+    path: /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/crs-setup.conf
+    insertafter: "^#  setvar:'tx.allowed_request_content_type"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK (allowed_request_content_type)"
+    block: |
+      SecAction \
+        "id:900220,\
+         phase:1,\
+         nolog,\
+         pass,\
+         t:none,\
+         setvar:'tx.allowed_request_content_type={{ modsecurity_allowed_content_types }}'"
+
+- include_tasks: exclude_modsecurity_files.yml
+  with_items: "{{ modsecurity_excluded_rule_files }}"
+  when: (modsecurity_excluded_rule_files is defined)
+        and (modsecurity_excluded_rule_files | length >0)
+
+- include_tasks: exclude_modsecurity_rules.yml
+  when: (modsecurity_excluded_rule_ids is defined)
+        and (modsecurity_excluded_rule_ids|length >0)

@@ -1,0 +1,21 @@
+---
+- name: "check {{ modsecurity_default_exception_file }} is present"
+  stat: path=/usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/{{ modsecurity_default_exception_file }}
+  register: file
+
+- name: "create {{ modsecurity_default_exception_file }} if absent"
+  file:
+    path: /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/{{ modsecurity_default_exception_file }}
+    state: touch
+  when: file.stat.exists == False
+
+- name: "add SecRuleRemoveById directives"
+  lineinfile:
+    path: /usr/local/owasp-modsecurity-crs-{{ owasp_rules_version }}/rules/{{ modsecurity_default_exception_file }}
+    line: |
+      SecRuleRemoveById {{ rule_item }}
+    regexp: "^SecRuleRemoveById {{ rule_item }}"
+    insertafter: "^SecRuleRemoveById {{ rule_item }}"
+  with_items: "{{ modsecurity_excluded_rule_ids }}"
+  loop_control:
+    loop_var: rule_item

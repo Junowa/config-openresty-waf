@@ -1,0 +1,16 @@
+---
+
+- name: add vhost configuration file
+  template:
+    src: "{{ playbook_dir }}/vhosts_templates/vhost_{{ item.name }}.conf.j2"
+    dest: "/usr/local/openresty/nginx/conf/sites-available/{{ item.name }}.conf"
+    owner: www-data
+    group: www-data
+  notify: restart openresty
+
+- name: add symlink for vhost configuration
+  file:
+    src: "/usr/local/openresty/nginx/conf/sites-available/{{ item.name }}.conf"
+    dest: "/usr/local/openresty/nginx/conf/sites-enabled/{{ item.name }}.conf"
+    state: link
+  notify: restart openresty

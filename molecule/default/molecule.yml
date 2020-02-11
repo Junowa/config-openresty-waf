@@ -1,0 +1,36 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: instance
+    image: ubuntu:16.04
+    privileged: true
+    command: /sbin/init
+provisioner:
+  name: ansible
+  options:
+    vault-password-file: ./molecule_pass_vault
+  inventory:
+    host_vars:
+      instance:
+        modsecurity_excluded_rule_files: ['REQUEST-903.9001-DRUPAL-EXCLUSION-RULES.conf']
+        modsecurity_default_exception_file: "RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf"
+        modsecurity_excluded_rule_ids: ['913110']
+        activate_modsecurity: true
+        custom_vhosts_config:
+          - servername: status
+            tool: status
+            activate_modsecurity: true
+            certificate_directory: /etc/ssl/nginx
+  lint:
+    name: ansible-lint
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

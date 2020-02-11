@@ -1,0 +1,29 @@
+---
+
+# oss installation params
+ssl_nginx_directory: /etc/ssl/nginx
+
+repository_path: "https://artifactory.thalesdigital.io/artifactory/list/generic-public/coreauto/openresty-modsecurity"
+
+# modsecurity params
+owasp_rules_version: 3.0.0
+modsecurity_sec_request_body_limit: 13107200
+modsecurity_allowed_http_methods: "GET HEAD POST OPTIONS"
+modsecurity_allowed_content_types: "application/x-www-form-urlencoded|multipart/form-data|text/xml|application/xml|application/x-amf|application/json|text/plain|foo"
+modsecurity_excluded_rule_files: []
+modsecurity_default_exception_file: "RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf"
+modsecurity_excluded_rule_ids: []
+modsecurity_inbound_anomaly_score_threshold: 10
+modsecurity_outbound_anomaly_score_threshold: 10
+
+# modsecurity logging
+modsecurity_auditengine: RelevantOnly
+modsecurity_auditlogformat: JSON
+modsdecurity_auditlogrelevantstatus: ^(?:5|4(?!04))
+
+# Log rotation retention period (in days)
+nginx_log_retention: 7
+
+# vhosts declaration depending on the vhost template definition
+# custom_vhosts_config:
+#   - { "vhost_name": "status_page" }
